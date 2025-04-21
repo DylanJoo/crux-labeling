@@ -52,35 +52,15 @@ def query(request, qId):
     judgements = Judgement.objects.filter(query=query.id)
 
     if "clear" in request.POST:
-        for c in query.type:
-            query.type[c] = 0
         for c in query.topic:
             query.topic[c] = 0
         query.comment = ""
 
     else:
         if "csrfmiddlewaretoken" in request.POST:
-            # type
-            for c in query.type:
-                if c in request.POST.getlist('type'):
-                    query.type[c] = 1
-                else:
-                    query.type[c] = 0
-
-            # topic
-            for t in query.topic:
-                if t in request.POST.getlist('topic'):
-                    query.topic[t] = 1
-                else:
-                    query.topic[t] = 0
-
-        if 'topic-drop' in request.POST:
-            for t_sub in request.POST.getlist('topic-drop'):
-                t, sub = t_sub.split('-')
-                query.topic[t] = int(sub)
-
-        if "comment" in request.POST:
-            query.comment = request.POST['comment'].strip()
+            # question-based nuggets
+            for n, question in query.questions.items():
+                query.nuggets[n] = request.POST.getlist(f'nugget-{n}')[0]
 
     query.save()
     query.length = len(query.text)
@@ -216,40 +196,28 @@ def upload(request):
     if 'queryFile' in request.FILES:
         f = request.FILES['queryFile']
         qryCount = 0
-        if request.FILES['queryFile'].name.endswith('txt'):
-            for query in f:
-                qid, txt = query.decode().strip().split("\t", 1)
-                query, created = Query.objects.get_or_create(qId=qid)
-                if created:
-                    query.text = txt
-                    query.metadata = txt
-                    query.save()
-                    qryCount += 1
-        else: # jsonl
-            for i, query in enumerate(f):
-                data = json.loads(query)
-                if i == 0:
-                    metadata = {
-                            'num_oracle_passages': data['company_name'], 
-                            'form': data['form'], 
-                            'filing_date': data['filing_date']
-                    }
-                else:
-                    qid = data['qid']
-                    txt = " ".join(data['paragraph'])
-                    metadata.update({'order': data['order']})
-                    query, created = Query.objects.get_or_create(qId=qid)
+        for i, query in enumerate(f):
+            data = json.loads(query)
+            qid = data['qid']
+            text = data['topic']
+            metadata = {
+                'num_oracle_passages': data['type'][1],
+                'type': data['type'][0],
+            }
+            questions = data['questions']
+            reference = data['report']
+            report = data['response']
+            query, created = Query.objects.get_or_create(qId=qid)
 
-                    if created:
-                        query.text = txt
-                        query.metadata = "{} {} {} -- #{}".format(
-                                metadata['company_name'],
-                                metadata['form'],
-                                metadata['filing_date'],
-                                metadata['order'],
-                        )
-                        query.save()
-                        qryCount += 1
+            if created:
+                query.text = text
+                query.metadata = metadata
+                for i, question in enumerate(questions):
+                    query.questions[i] = question
+                query.reference = reference
+                query.report = report
+                query.save()
+                qryCount += 1
 
         context['uploaded'] = True
         context['queries'] = qryCount

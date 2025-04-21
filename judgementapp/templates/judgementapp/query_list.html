@@ -19,15 +19,15 @@
     <div class="table-responsive m-2">
         <table class="table table-striped">
         <thead style="table-layout:fixed">
-            <tr><th style="width: 28%">Id</th>
-                <th style="width: 55%">Text</th>
+            <tr><th style="width: 13%">Id</th>
+                <th style="width: 70%">Text</th>
                 <th style="width: 7%"># Docs</th>
                 <th style="width: 10%"># Unjudged</th>
             </tr>
         </thead>
         <tbody>
             {% for query in queries %}
-            <tr><td><p {% if query.unclassified %} style="color: red" {% endif %}>{{ query.qId }}</p>
+            <tr><td><p {% if query.unfinished %} style="color: red" {% endif %}>{{ query.qId }}</p>
                 {% if query.type.0 == 1%}<button type="button" class="btn btn-secondary btn-sm">Trivial</button>
                 {% endif %}
                 {% if query.type.1 == 1%}<button type="button" class="btn btn-primary btn-sm">Company-specific</button>
@@ -49,12 +49,6 @@
                 {% else %} 
                     <td>{{ query.num_unjudged_docs }}</td>
                 {% endif %}
-                {# <td  #}
-                {#     {% if query.type.0 == 1 %} style="color: gray" #}
-                {#     {% elif query.num_unjudged_docs > 0 %} style="color: red"  #}
-                {#     {% endif %}> #}
-                {#     {{ query.num_unjudged_docs }} #}
-                {# </td> #}
             </tr>
             {% endfor %}
         </tbody>
