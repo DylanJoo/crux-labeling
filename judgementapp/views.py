@@ -52,15 +52,18 @@ def query(request, qId):
     judgements = Judgement.objects.filter(query=query.id)
 
     if "clear" in request.POST:
-        for c in query.topic:
-            query.topic[c] = 0
-        query.comment = ""
+        for n, question in query.questions.items():
+            query.nuggets[n] = ""
+        for n, label in query.question_labels.items():
+            query.question_labels[n] = 0
 
     else:
         if "csrfmiddlewaretoken" in request.POST:
             # question-based nuggets
             for n, question in query.questions.items():
                 query.nuggets[n] = request.POST.getlist(f'nugget-{n}')[0]
+            for n, label in query.question_labels.items():
+                query.question_labels[n] = int(request.POST.getlist(f'qlabel-{n}')[0])
 
     query.save()
     query.length = len(query.text)

@@ -7,8 +7,6 @@
 .panel {
     display: none;
     padding: 10px;
-    background-color: #fafafa;
-    border: 1px solid #ddd;
 }
 </style>
 
@@ -96,16 +94,38 @@
     </script>
 
     <div class="card-body row">
-        <h6>Nuggets</h6>
-	{% for i, question in query.questions.items %}
-	    <button type="button" class="btn btn-link" onclick="togglePanel('q{{ i }}')">Q-{{ i }} {{ question }}</button><br/>
-	    <div id="q{{ i }}" class="panel">
-		<button type="button" class="btn btn-warning btn-sm" id="capture" onclick="captureSelection({{ i }})">Nugget Highlighter</button>
-		<textarea style="width:100%" id="nugget-{{ i }}" name="nugget-{{ i }}" rows="2" cols="50">{{ query.nuggets|get_item:i }}</textarea>
-	    </div>
-	{% endfor %}
+        <h6>Questions</h6>
+            {% for i, question in query.questions.items %}
+            <div id="q{{ i }}" class="panel">
+                <p>({{ i }}) {{ question }}<br/>
+                    <input class="form-check-input" type="radio" name="qlabel-{{ i }}" value="-1"
+                    {% if query.question_labels|get_item:i == -1%} checked {% endif %}>
+                    <label class="form-check-label" for="defaultCheck1">-1 (Unanswerable) </label>
+                    <input class="form-check-input" type="radio" name="qlabel-{{ i }}" value="0"
+                    {% if query.question_labels|get_item:i == 0%} checked {% endif %}>
+                    <label class="form-check-label" for="defaultCheck1">0 (None)</label>
+                    <input class="form-check-input" type="radio" name="qlabel-{{ i }}" value="1"
+                    {% if query.question_labels|get_item:i == 1%} checked {% endif %}>
+                    <label class="form-check-label" for="defaultCheck1">1 (Answerable)</label>
+                </p>
+                <div style="display: flex; align-items: flex-end; gap: 10px;">
+                    <textarea style="width:80%" id="nugget-{{ i }}" name="nugget-{{ i }}" rows="1" cols="10">{{ query.nuggets|get_item:i }}</textarea>
+                    <button type="button" class="btn btn-warning btn-sm" id="capture" onclick="captureSelection({{ i }})">Nugget Highlighter ({{ i }})</button>
+                </div>
+            </div>
+            {% endfor %}
+    </div>
 
-        <div class="col-2 align-self-end" align="right">
+    <div class="card-body row">
+	{% for i, question in query.questions.items %}
+            <div class="col-1">
+                <button type="button" class="btn btn-link" onclick="togglePanel('q{{ i }}')">Q-{{ i }}</button>
+            </div>
+	{% endfor %}
+    </div>
+
+    <div class="card-body row">
+        <div class="col align-self-end" align="right">
             <div class="form-actions">
                 <button type="submit" class="btn btn-outline-primary btn-sm">Save</button> 
                 <button type="submit" name="clear" value="1" class="btn btn-outline-danger btn-sm">Clear</button> 
