@@ -65,7 +65,6 @@ class Query(models.Model):
                 "id": self.qId,
                 "text": self.text,
                 "highlight": self.comment,
-                "type": self.type,
 		}
 		to_return = json.dumps(data_dict)
 		# return '{%s: %s}'% (self.qId, self.text)

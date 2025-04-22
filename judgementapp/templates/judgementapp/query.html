@@ -3,6 +3,15 @@
 {% block content %}
 {% load custom_tags %}
 
+<style>
+.panel {
+    display: none;
+    padding: 10px;
+    background-color: #fafafa;
+    border: 1px solid #ddd;
+}
+</style>
+
 <div class="card">
 
 <div class="card-body">
@@ -39,19 +48,19 @@
         Here are <a href="{{ request.path }}examples">some examples</a>.
     </p>
 </div>
-<div class="card text-left m-2">
-    <form class="form-inline" action="" method="post"> {% csrf_token %}
 
+<div class="card text-left m-2">
+
+    <form class="form-inline" action="" method="post"> {% csrf_token %}
     <div class="card-body row">
         <h6>ID: <i>{{query.qId}}</i> </h6>
-        <h6>Number of oracle passages: {{ query.metadata.num_oracle_passages }} </h6>
+        {# <h6>Number of oracle passages: {{ query.metadata.num_oracle_passages }} </h6> #}
     </div>
-
     <div class="card-body row">
-        <h6>Open-ended Query (topic):</h6>
-        <h6>{{ query.text }} </h6>
+        <h6>Open-ended Query</h6>
+        <p>{{ query.text }} </p>
 
-        <div class="col" align="left">
+        <div class="col" align="right">
         <div class="btn-group btn-group-sm" role="group" aria-label="Basic checkbox toggle button group">
             <input type="checkbox" class="btn-check" name="topic" id="topic1" value="1"
             {% if query.topic.1 == 1%} checked {% endif %}>
@@ -59,48 +68,42 @@
         </div>
         </div>
     </div>
-
     <div class="card-body row">
-        <h6>Report:</h6>
-        <h6>{{ query.report }} </h6>
+	<h6>Report</h6>
+	<p>{{ query.report }} </p>
     </div>
 
+    <script type="text/javascript">
+       function togglePanel(id) {
+	 document.querySelectorAll('.panel').forEach(panel => {
+	   panel.style.display = (panel.id === id) ? 'block' : 'none';
+	 });
+       }
+      function getSelectedText() {
+	  if (window.getSelection) {
+	      return window.getSelection().toString();
+	  } else if (document.selection) {
+	      return document.selection.createRange().text;
+	  }
+	  return '';
+      }
+      function captureSelection(i) {
+	let query = {'nuggets': {{ query.nuggets|safe }}};
+	textarea = document.getElementById('nugget-' + i);
+        query.nuggets[i] = getSelectedText();
+	textarea.value = query.nuggets[i];
+      }
+    </script>
+
     <div class="card-body row">
-        <h6>Question-based Nuggets:</h6>
-
-        <div><script type="text/javascript">
-          function getSelectedText() {
-              if (window.getSelection) {
-                  return window.getSelection().toString();
-              } else if (document.selection) {
-                  return document.selection.createRange().text;
-              }
-              return '';
-          }
-
-          function captureSelection(i) {
-            let query = {'nuggets': {{ query.nuggets|safe }}};
-            textarea = document.getElementById('nugget-' + i);
-            if (query.nuggets[i] == '') {
-                query.nuggets[i] = getSelectedText();
-            } else {
-                query.nuggets[i] += ' ||| ' + getSelectedText();
-            }
-            textarea.value = query.nuggets[i];
-          }
-        </script></div>
-        <div class="col float-left">
-            {% for i, question in query.questions.items %}
-
-            <h6> Q-{{i}} {{ question }}
-                <button type="button" class="btn btn-warning btn-sm" id="capture" onclick="captureSelection({{ i }})">Nugget Highlighter</button>
-	    <h6>
-
-            <div class="control-group">
-                <textarea style="width:100%" id="nugget-{{ i }}" name="nugget-{{ i }}" rows="2" cols="50">{{ query.nuggets|get_item:i }}</textarea>
-            </div>
-            {% endfor %}
-        </div>
+        <h6>Nuggets</h6>
+	{% for i, question in query.questions.items %}
+	    <button type="button" class="btn btn-link" onclick="togglePanel('q{{ i }}')">Q-{{ i }} {{ question }}</button><br/>
+	    <div id="q{{ i }}" class="panel">
+		<button type="button" class="btn btn-warning btn-sm" id="capture" onclick="captureSelection({{ i }})">Nugget Highlighter</button>
+		<textarea style="width:100%" id="nugget-{{ i }}" name="nugget-{{ i }}" rows="2" cols="50">{{ query.nuggets|get_item:i }}</textarea>
+	    </div>
+	{% endfor %}
 
         <div class="col-2 align-self-end" align="right">
             <div class="form-actions">
