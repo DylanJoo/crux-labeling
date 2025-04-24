@@ -61,14 +61,16 @@ class Query(models.Model):
 	nuggets = models.JSONField(default=default_query_nuggets)
 
 	def __str__(self):
-		data_dict = {
-                "id": self.qId,
-                "text": self.text,
-                "highlight": self.comment,
-		}
-		to_return = json.dumps(data_dict)
-		# return '{%s: %s}'% (self.qId, self.text)
-		return to_return + '\n'
+	    answerabiliy = [self.question_labels[k] for k in self.questions]
+	    data_dict = {
+	            "id": self.qId,
+	            "question_based_nugget": {self.questions[k]: self.nuggets[k] for k in self.questions},
+	            "answerabiliy": answerabiliy,
+	            "coverage": sum(a==1 for a in answerabiliy) / len(answerabiliy),
+	            "highlight": self.comment
+	    }
+	    to_return = json.dumps(data_dict)
+	    return to_return + '\n'
 
 	def unfinished(self):
 		return sum([1 if v == '' else 0 for v in self.nuggets.values()]) > 0
