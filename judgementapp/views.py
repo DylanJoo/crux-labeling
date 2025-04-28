@@ -28,7 +28,8 @@ def qrels(request):
     judgements = Judgement.objects.exclude(relevance=-1)
 
     response = HttpResponse(judgements, content_type='application/force-download')
-    response['Content-Disposition'] = 'attachment; filename=qrels.txt'
+    # response['Content-Disposition'] = 'attachment; filename=qrels.txt'
+    response['Content-Disposition'] = 'attachment; filename=qrels.jsonl'
     return response
 
 def qlabels(request):
@@ -127,17 +128,21 @@ def document(request, qId, docId):
 def judge(request, qId, docId):
     query = get_object_or_404(Query, qId=qId)
     document = get_object_or_404(Document, docId=docId)
-    relevance = request.POST['relevance']
-    comment = request.POST['comment'].strip()
+    # relevance = request.POST['relevance']
 
     judgements = Judgement.objects.filter(query=query.id)
     judgement, created = Judgement.objects.get_or_create(query=query.id, document=document.id)
-    judgement.relevance = int(relevance)
-    # if comment != '':
-    #     judgement.comment = comment
-    judgement.comment = comment
-    judgement.save()
+    # judgement.relevance = int(relevance)
 
+    judged = [(s.split('-')[-1], request.POST.getlist(s)[0]) for s in request.POST if s.startswith('relevance-')]
+    for n, rel in judged:
+        judgement.relevances[n] = int(rel)
+
+    judged = [(s.split('-')[-1], request.POST.getlist(s)[0]) for s in request.POST if s.startswith('rationale-')]
+    for n, rationale in judged:
+        judgement.rationales[n] = rationale
+
+    judgement.save()
 
     next = None
     try:

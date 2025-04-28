@@ -14,7 +14,38 @@
     #summary h6.collapsing { min-height: 0px !important; }
     #summary a.collapsed:after  { content: '(show target)'; }
     #summary a:not(.collapsed):after { content: '(hide target)'; }
+.panel {
+    display: none;
+    padding: 10px;
+}
 </style>
+
+<script type="text/javascript">
+   function togglePanel(id) {
+     document.querySelectorAll('.panel').forEach(panel => {
+       panel.style.display = (panel.id === id) ? 'block' : 'none';
+     });
+   }
+   function togglePanel(id) {
+     document.querySelectorAll('.panel').forEach(panel => {
+       panel.style.display = (panel.id === id) ? 'block' : 'none';
+     });
+   }
+  function getSelectedText() {
+      if (window.getSelection) {
+          return window.getSelection().toString();
+      } else if (document.selection) {
+          return document.selection.createRange().text;
+      }
+      return '';
+  }
+  function captureSelection(i) {
+    let judgement = {'rationales': {{ judgement.rationales|safe }}};
+    textarea = document.getElementById('rationale-' + i);
+    judgement.rationales[i] = getSelectedText();
+    textarea.value = judgement.rationales[i];
+  }
+</script>
 
 <div class="card">
 
@@ -37,37 +68,17 @@
     <div class="row card-body">
         <h6>ID: <i>{{query.qId}}</i></h6>
     </div>
-
     <div class="card-body row">
         <h6>Open-ended Query</h6>
         <p>{{ query.text }}</p>
     </div>
-
-    <div class="card-body row">
-        {% if query.unfinished %} 
-            <h6>NO judged nuggets found</h6>
-        {% else %}
-            {% for i, question in query.questions.items %}
-                {% if query.nuggets|get_item:i %}
-                    <div class="col">
-                        <h6>Question</h6>
-                        <p>{{ question }}</p>
-                    </div>
-                    <div class="col">
-                        <h6>Nugget <a href="{% url 'query' qId=query.qId %}" class="btn btn-link btm-sm">(edit nugget)</a></h6>
-                        <p>{{ query.nuggets|get_item:'0' }}</p>
-                    </div>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
-    </div>
 </div>
+
 
 <div class="card text-left m-2">
     <div class="card-body row">
         <h6>Passage ID: <i>{{ document.docId }}</i> ({{ rank }} / {{total_rank}}) </h6>
     </div>
-
     <div class="card-body row">
         <div class="col">
             <h6>{{ document.text }} </h6>
@@ -76,7 +87,6 @@
           <p>{{ content }}</p>
         </div>
     </div>
-
     <div class="card-body row">
         <div class="col">
             {% if prev %}
@@ -89,97 +99,79 @@
             {% endif %}
         </div>
     </div>
+    <div class="row card-body">
+        {% for i, question in query.questions.items %}
+            <div class="col-1">
+                <button type="button" class="btn btn-link" onclick="togglePanel('q{{ i }}')">Q-{{ i }}</button>
+            </div>
+        {% endfor %}
+    </div>
 </div>
 
 <div class="card text-left m-2">
     <form class="form-inline" action="{% url 'judge' qId=query.qId docId=document.docId %}" method="post">
-    <div class="row card-body">
-        <div class="col">
-            <h6>Judge the anwerability of the context</h6>
-            <p>Determine whether the question can be answered based on the provided context?
-            Rate the context with on a scale from 0 to 5 according to the guideline below.</p>
-            {% csrf_token %}
 
-{# "- 5: The context is highly relevant, complete, and accurate.\n" + \ #}
-{# "- 4: The context is mostly relevant and complete but may have minor gaps or inaccuracies.\n" + \ #}
-{# "- 3: The context is partially relevant and complete, with noticeable gaps or inaccuracies.\n" + \ #}
-{# "- 2: The context has limited relevance and completeness, with significant gaps or inaccuracies.\n" + \ #}
-{# "- 1: The context is minimally relevant or complete, with substantial shortcomings.\n" + \ #}
-{# "- 0: The context is not relevant or complete at all." #}
-{#  #}
-            {% if query.type.0 != 1%} {# if it is not a highlight --> not relevant referneces#}
-            <div class="form-check" id="relevance-labels">
-                <input type="radio" name="relevance" id="relevance-1" value="-1" {% if judgement.relevance == -1 %} checked {% endif %}>
-                <label class="radio"> Unjudged </label></br>
-                <input type="radio" name="relevance" id="relevance5" value="5" {% if judgement.relevance == 5 %} checked {% endif %}>
-                <label class="radio"> (5) highly relevant, complete, and accurate.</label></br>
-                <input type="radio" name="relevance" id="relevance5" value="4" {% if judgement.relevance == 4 %} checked {% endif %}>
-                <label class="radio"> (4)  mostly relevant and complete but may have minor gaps or inaccuracies.</label></br>
-                <input type="radio" name="relevance" id="relevance3" value="3" {% if judgement.relevance == 3 %} checked {% endif %}>
-                <label class="radio"> (3) partially relevant and complete, with noticeable gaps or inaccuracies.</label></br>
-                <input type="radio" name="relevance" id="relevance2" value="2" {% if judgement.relevance == 2 %} checked {% endif %}>
-                <label class="radio"> (2) limited relevance and completeness, with significant gaps or inaccuracies.</label></br>
-                <input type="radio" name="relevance" id="relevance1" value="1" {% if judgement.relevance == 1 %} checked {% endif %}>
-                <label class="radio"> (1) minimally relevant or complete, with substantial shortcomings.</label></br>
-                <input type="radio" name="relevance" id="relevance0" value="0" {% if judgement.relevance == 0 %} checked {% endif %}>
-                <label class="radio"> (0) minimally relevant or complete, with substantial shortcomings.</label></br>
+    {% if query.unfinished == 0 %} 
+        <h6>NO judged nuggets found</h6>
+    {% else %}
+
+    {% for i, question in query.questions.items %}
+    {% if query.nuggets|get_item:i %}
+
+        <div id="q{{ i }}" class="panel">
+            <div class="row card-body">
+                <div class="col">
+                    <h6>Question</h6>
+                    <p>{{ query.questions|get_item:i }}</p>
+                </div>
+                <div class="col">
+                    <h6>Nugget <a href="{% url 'query' qId=query.qId %}" class="btn btn-link btm-sm">(edit nugget)</a></h6>
+                    <p>{{ query.nuggets|get_item:i }}</p>
+                </div>
             </div>
-            {% else %}
-            <div class="form-check" id="relevance-labels">
-                <input type="radio" name="relevance" id="relevance1" value="-1" {% if judgement.relevance == -1 %} checked {% endif %}>
-                <label class="radio"> Unjudged </label></br>
-            </div>
-            {% endif %}
-        </div>
 
-        <div class="col">
-            <div class="control-group">
-                <script type="text/javascript">
-                  function getSelectedText() {
-                      if (window.getSelection) {
-                          return window.getSelection().toString();
-                      } else if (document.selection) {
-                          return document.selection.createRange().text;
-                      }
-                      return '';
-                  }
-
-                  function captureSelection() {
-                    textarea = document.getElementById('comment');
-                    {# if (textarea.value=='Comments') { #}
-                    if (textarea.value.length == 0) {
-                      textarea.value = getSelectedText();
-                    } else if (textarea.value.length > 0) {
-                      textarea.value = textarea.value + ' ||| ' + getSelectedText();
-                    }
-                  }
-
-                  // Keyboard shortcuts for faster judging.
-                  document.addEventListener("DOMContentLoaded", function() {
-                      let btn = {% if next %} document.getElementById("btn-next") {% else %} document.getElementById("btn-save") {% endif %}
-                      let els = document.querySelectorAll("#relevance-labels > label > input");
-                      document.onkeypress = function (e) {
-                          e = e || window.event;
-                          value = e.keyCode - 49
-                          if (value >= 0 && value < els.length) {
-                              els[value].checked = 1
-                              btn.click();
-                          }
-                      };
-                  });
-                </script>
-
-                <h6>The Rationale of nugget</h6>
-                <p>Why you judge the passage can answer the question? Type or
-                <button type="button" class="btn btn-warning btn-sm" id="capture" onclick="captureSelection()">highlight</button>
-                 <div class="control-group">
-                    <div class="controls">
-                      <textarea style="width:100%" id="comment" name="comment">{% if judgement.comment %}{{ judgement.comment }}{% else %}{% endif %}</textarea>
+            <div class="row card-body">
+                <div class="col">
+                    <h6>Judge the anwerability of the context</h6>
+                    <p>Determine whether the question can be answered based on the provided context?
+                    Rate the context with on a scale from 0 to 5 according to the guideline below.</p>
+                    {% csrf_token %}
+                    <div class="form-check" id="relevance-labels">
+                        <input type="radio" name="relevance" id="relevance-1" value="-1" {% if judgement.relevances|get_item:i == -1 %} checked {% endif %}>
+                        <label class="radio"> Unjudged </label></br>
+                        <input type="radio" name="relevance-{{ i }}" id="relevance-5" value="5" {% if judgement.relevances|get_item:i == 5 %} checked {% endif %}>
+                        <label class="radio"> (5) highly relevant, complete, and accurate.</label></br>
+                        <input type="radio" name="relevance-{{ i }}" id="relevance-4" value="4" {% if judgement.relevances|get_item:i == 4 %} checked {% endif %}>
+                        <label class="radio"> (4)  mostly relevant and complete but may have minor gaps or inaccuracies.</label></br>
+                        <input type="radio" name="relevance-{{ i }}" id="relevance-3" value="3" {% if judgement.relevances|get_item:i == 3 %} checked {% endif %}>
+                        <label class="radio"> (3) partially relevant and complete, with noticeable gaps or inaccuracies.</label></br>
+                        <input type="radio" name="relevance-{{ i }}" id="relevance-2" value="2" {% if judgement.relevances|get_item:i == 2 %} checked {% endif %}>
+                        <label class="radio"> (2) limited relevance and completeness, with significant gaps or inaccuracies.</label></br>
+                        <input type="radio" name="relevance-{{ i }}" id="relevance-1" value="1" {% if judgement.relevances|get_item:i == 1 %} checked {% endif %}>
+                        <label class="radio"> (1) minimally relevant or complete, with substantial shortcomings.</label></br>
+                        <input type="radio" name="relevance-{{ i }}" id="relevance-0" value="0" {% if judgement.relevances|get_item:i == 0 %} checked {% endif %}>
+                        <label class="radio"> (0) minimally relevant or complete, with substantial shortcomings.</label></br>
                     </div>
-                  </div>
+                </div>
+                <div class="col">
+                    <div class="control-group">
+                        <h6>The Rationale of nugget</h6>
+                        <p>Why you judge the passage can answer the question? Type or
+                        <button type="button" class="btn btn-warning btn-sm" id="capture" onclick="captureSelection({{ i }})">highlight</button>
+                         <div class="control-group">
+                            <div class="controls">
+                                <textarea style="width:100%" id="rationale-{{ i }}" name="rationale-{{ i }}">{{ judgement.rationales|get_item:i }}</textarea>
+                            </div>
+                          </div>
+                    </div>
+                </div>
+
             </div>
         </div>
-    </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+</div>
 
     <div class="card-body row">
         <div class="col">

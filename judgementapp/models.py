@@ -49,7 +49,6 @@ class Query(models.Model):
     report = models.TextField()
 
     # labeling
-    comment = models.TextField(default="", null=True)
     nuggets = models.JSONField(default=default_query_nuggets)
 
     def __str__(self):
@@ -59,7 +58,6 @@ class Query(models.Model):
                 "question_based_nugget": {self.questions[k]: self.nuggets[k] for k in self.questions},
                 "answerabiliy": answerabiliy,
                 "coverage": sum(a==1 for a in answerabiliy) / len(answerabiliy),
-                "highlight": self.comment
         }
         to_return = json.dumps(data_dict)
         return to_return + '\n'
@@ -79,7 +77,7 @@ class Query(models.Model):
         return sum([int(v) for v in self.type.values()]) == 0
 
     def num_unjudged_docs(self):
-        unjugded = [judgement for judgement in self.judgements() if judgement.relevance < 0]
+        unjugded = [1 for judgement in self.judgements() if max(judgement.relevances.values()) == -1]
         return len(unjugded)
 
     def num_judgements(self):
@@ -88,15 +86,44 @@ class Query(models.Model):
     def judgements(self):
         return Judgement.objects.filter(query=self.id)
 
+def default_judgement_relevances():
+    return {str(i): -1 for i in range(15)}
+def default_judgement_rationales():
+    return {str(i): "" for i in range(15)}
+
 class Judgement(models.Model):
     labels = {-1: 'Unjudged', 0: 'Not relvant', 1: 'minimally relevant', 2:'limited relevant', 3:'partially relevant', 4:'mostly relevant', 5:'fully relevant'}
     query = models.ForeignKey(Query, on_delete=models.CASCADE)
     document = models.ForeignKey(Document, on_delete=models.CASCADE)
     comment = models.TextField(default="", null=True)
-    relevance = models.IntegerField()
+    # relevance = models.IntegerField()
+
+    relevances = models.JSONField(default=default_judgement_relevances)
+    rationales = models.JSONField(default=default_judgement_rationales)
 
     def __str__(self):
-        return '%s Q0 %s %s\n' % (self.query.qId, self.document.docId, self.relevance)
+        data_dict = {
+                "id": self.query.qId,
+                "document": self.document.docId,
+                "relevances": self.relevances,
+        }
+        to_return = json.dumps(data_dict)
+        return to_return + '\n'
 
     def label(self):
-        return self.labels[self.relevance]
+        print(self.relevances.values())
+        return " | ".join(self.labels[r] for r in self.relevances.values() if r != -1)
+
+# old document-level judgement
+# class Judgement(models.Model):
+#     labels = {-1: 'Unjudged', 0: 'Not relvant', 1: 'minimally relevant', 2:'limited relevant', 3:'partially relevant', 4:'mostly relevant', 5:'fully relevant'}
+#     query = models.ForeignKey(Query, on_delete=models.CASCADE)
+#     document = models.ForeignKey(Document, on_delete=models.CASCADE)
+#     comment = models.TextField(default="", null=True)
+#     relevance = models.IntegerField()
+#
+#     def __str__(self):
+#         return '%s Q0 %s %s\n' % (self.query.qId, self.document.docId, self.relevance)
+#
+#     def label(self):
+#         return self.labels[self.relevance]
