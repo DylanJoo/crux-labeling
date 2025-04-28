@@ -1,6 +1,8 @@
 {% extends "judgementapp/base.html" %}
 
 {% block content %}
+{% load custom_tags %}
+
 <style>
     #summary h6.collapse:not(.show) {
         height: 0px !important;
@@ -17,17 +19,7 @@
 <div class="card">
 
 <div class="card-body">
-    <h5 class="card-title">Task 2 - Reference Retrieval</h5>
-    <p class="card-text">Here is the guideline.
-        This task has two subtasks: (task 1a) span highlighting, and (task 1b) content classification.
-        And below are some annotation instructions. 
-        <h6 class="card-title">General guildline</h6>
-        <ul>
-            <li>Annotators should <b>avoid speculation</b> based on prior knowledge and 
-                should not draw conclusions that require speculation or prior knowledge of the company.</li>
-            <li>Annotators should be as <b>consistent</b> as they can be with respect to their own annotations.</li> 
-        </ul>
-    </p>
+    <h5 class="card-title">Task 2 - Bubric-based Passage Judgement</h5>
     <p class="card-text">
         <h6 class="card-title">Detail guildlines</h6>
         For this task, annotators should access the relevance of reference (i.e., the document in IR). 
@@ -75,7 +67,9 @@
             (edit highlight)</a>
         </h6>
         <div class="col">
-            <h6>{{ query.comment }}</h6>
+            {% for i, question in query.questions.items %}
+                <p>{{ i }}: {{ query.nuggets|get_item:i}}</p>
+            {% endfor %}
         </div>
         <div class="col-2" align="right">
             {% if query.type.0 == 1%} 
@@ -100,7 +94,7 @@
 
 <div class="card text-left m-2">
     <div class="card-body row">
-        <h6>Reference ID: <i>{{ document.docId }}</i> ({{ rank }} / {{total_rank}}) </h6>
+        <h6>Doc ID: <i>{{ document.docId }}</i> ({{ rank }} / {{total_rank}}) </h6>
     </div>
 
     <div class="card-body row">
@@ -108,9 +102,10 @@
             <h6>{{ document.text }} </h6>
         </div>
         <div style="height:100; position:relative; overflow-y: scroll;" id='content'>
-          {% for c in content %}
-          <h6>{{ c }}<br/></h6>
-          {% endfor %}
+          <p>{{ content }}</p>
+          {# {% for c in content %} #}
+          {# <h6>{{ c }}<br/></h6> #}
+          {# {% endfor %} #}
         </div>
         <div class="col" align="left">
             <div class="btn-group btn-group-sm" role="group" aria-label="Basic checkbox toggle button group">

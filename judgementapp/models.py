@@ -5,7 +5,6 @@ from django.db import models
 # Create your models here.
 class Document(models.Model):
 	docId = models.CharField(max_length=100)
-	text = models.TextField()
 	# add document
 
 	def __str__(self):
@@ -17,13 +16,6 @@ class Document(models.Model):
 			with open(settings.DATA_DIR+"/"+self.docId) as f:
 			    read = f.read()
 			    try:
-			        metadata = json.loads(read)['metadata']
-			        self.text = "{} {} {} -- #{}".format(
-			                metadata['company_name'],
-			                metadata['form'],
-			                metadata['filing_date'],
-			                metadata['order'],
-			        )
 			        data = json.loads(read)
 			        content = json.loads(read)['contents']
 			    except:
