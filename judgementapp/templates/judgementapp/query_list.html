@@ -27,7 +27,9 @@
         </thead>
         <tbody>
             {% for query in queries %}
-            <tr><td><p {% if query.unfinished %} style="color: red" {% endif %}>{{ query.qId }}</p>
+                <tr><td><p style="color: 
+                    {% if query.unfinished == 0 %} red {% endif %}
+                    {% if query.unfinished == 2 %} green {% endif %}">{{ query.qId }}</p>
                 {% if query.type.0 == 1%}<button type="button" class="btn btn-secondary btn-sm">Trivial</button>
                 {% endif %}
                 {% if query.type.1 == 1%}<button type="button" class="btn btn-primary btn-sm">Company-specific</button>

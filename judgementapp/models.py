@@ -4,25 +4,25 @@ from django.db import models
 
 # Create your models here.
 class Document(models.Model):
-	docId = models.CharField(max_length=100)
-	# add document
+    docId = models.CharField(max_length=100)
+    # add document
 
-	def __str__(self):
-		return self.docId
+    def __str__(self):
+        return self.docId
 
-	def get_content(self):
-		content = ""
-		try:
-			with open(settings.DATA_DIR+"/"+self.docId) as f:
-			    read = f.read()
-			    try:
-			        data = json.loads(read)
-			        content = json.loads(read)['contents']
-			    except:
-			        content += read
-		except Exception:
-			content = "Could not read file %s" % settings.DATA_DIR+"/"+self.docId
-		return content
+    def get_content(self):
+        content = ""
+        try:
+            with open(settings.DATA_DIR+"/"+self.docId) as f:
+                read = f.read()
+                try:
+                    data = json.loads(read)
+                    content = json.loads(read)['contents']
+                except:
+                    content += read
+        except Exception:
+            content = "Could not read file %s" % settings.DATA_DIR+"/"+self.docId
+        return content
 
 def default_query_types():
     return {str(i): 0 for i in range(3)}
@@ -37,59 +37,70 @@ def default_query_nuggets():
     return {str(i): '' for i in range(50)}
 
 class Query(models.Model):
-	# qId = models.IntegerField()
-	qId = models.CharField(max_length=100)
-	text = models.CharField(max_length=300, default="NA")
-	topic = models.JSONField(default={'1': 1})
-	# crux
-	metadata = models.JSONField(default=default_query_metadata)
-	questions = models.JSONField(default=default_query_questions)
-	question_labels = models.JSONField(default=default_query_question_labels)
-	reference = models.TextField()
-	report = models.TextField()
+    # qId = models.IntegerField()
+    qId = models.CharField(max_length=100)
+    text = models.CharField(max_length=300, default="NA")
+    topic = models.JSONField(default={'1': 1})
+    # crux
+    metadata = models.JSONField(default=default_query_metadata)
+    questions = models.JSONField(default=default_query_questions)
+    question_labels = models.JSONField(default=default_query_question_labels)
+    reference = models.TextField()
+    report = models.TextField()
 
-	# labeling
-	comment = models.TextField(default="", null=True)
-	nuggets = models.JSONField(default=default_query_nuggets)
+    # labeling
+    comment = models.TextField(default="", null=True)
+    nuggets = models.JSONField(default=default_query_nuggets)
 
-	def __str__(self):
-	    answerabiliy = [self.question_labels[k] for k in self.questions]
-	    data_dict = {
-	            "id": self.qId,
-	            "question_based_nugget": {self.questions[k]: self.nuggets[k] for k in self.questions},
-	            "answerabiliy": answerabiliy,
-	            "coverage": sum(a==1 for a in answerabiliy) / len(answerabiliy),
-	            "highlight": self.comment
-	    }
-	    to_return = json.dumps(data_dict)
-	    return to_return + '\n'
+    def __str__(self):
+        answerabiliy = [self.question_labels[k] for k in self.questions]
+        data_dict = {
+                "id": self.qId,
+                "question_based_nugget": {self.questions[k]: self.nuggets[k] for k in self.questions},
+                "answerabiliy": answerabiliy,
+                "coverage": sum(a==1 for a in answerabiliy) / len(answerabiliy),
+                "highlight": self.comment
+        }
+        to_return = json.dumps(data_dict)
+        return to_return + '\n'
 
-	def unfinished(self):
-		return sum([1 if v == '' else 0 for v in self.nuggets.values()]) > 0
+    def unfinished(self):
+        n_total = sum([1 for v in self.question_labels.values()])
+        n_judged = sum([int(v) for v in self.question_labels.values()])
 
-	def unclassified(self):
-	    return sum([int(v) for v in self.type.values()]) == 0
+        if n_judged == 0:
+            return 0 
+        elif n_total != n_judged:
+            return 1
+        else:
+            return 2
 
-	def num_unjudged_docs(self):
-		unjugded = [judgement for judgement in self.judgements() if judgement.relevance < 0]
-		return len(unjugded)
+    def finished(self):
+        n_unjudged = sum([int(v) for v in self.question_labels.values() if v == 0 ])
+        return n_unjudged == 0
 
-	def num_judgements(self):
-		return len(self.judgements())
+    def unclassified(self):
+        return sum([int(v) for v in self.type.values()]) == 0
 
-	def judgements(self):
-		return Judgement.objects.filter(query=self.id)
+    def num_unjudged_docs(self):
+        unjugded = [judgement for judgement in self.judgements() if judgement.relevance < 0]
+        return len(unjugded)
+
+    def num_judgements(self):
+        return len(self.judgements())
+
+    def judgements(self):
+        return Judgement.objects.filter(query=self.id)
 
 class Judgement(models.Model):
-	labels = {-1: 'Unjudged', 0: 'Not relvant', 1: 'Somewhat relevant', 2:'Highly relevant'}
+    labels = {-1: 'Unjudged', 0: 'Not relvant', 1: 'minimally relevant', 2:'limited relevant', 3:'partially relevant', 4:'mostly relevant', 5:'fully relevant'}
+    query = models.ForeignKey(Query, on_delete=models.CASCADE)
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    comment = models.TextField(default="", null=True)
+    relevance = models.IntegerField()
 
-	query = models.ForeignKey(Query, on_delete=models.CASCADE)
-	document = models.ForeignKey(Document, on_delete=models.CASCADE)
-	comment = models.TextField(default="", null=True)
-	relevance = models.IntegerField()
+    def __str__(self):
+        return '%s Q0 %s %s\n' % (self.query.qId, self.document.docId, self.relevance)
 
-	def __str__(self):
-		return '%s Q0 %s %s\n' % (self.query.qId, self.document.docId, self.relevance)
-
-	def label(self):
-		return self.labels[self.relevance]
+    def label(self):
+        return self.labels[self.relevance]

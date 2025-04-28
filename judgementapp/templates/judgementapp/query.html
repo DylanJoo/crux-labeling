@@ -146,7 +146,11 @@
                             {% if judgement.relevance == -1 %} black {% endif %}
                             {% if judgement.relevance == 0 %} red {% endif %}
                             {% if judgement.relevance == 1 %} orange {% endif %}
-                            {% if judgement.relevance == 2 %} green {% endif %} " >{{ judgement.label }}</td>
+                            {% if judgement.relevance == 2 %} orange {% endif %} 
+                            {% if judgement.relevance == 3 %} green {% endif %} 
+                            {% if judgement.relevance == 4 %} green {% endif %} 
+                            {% if judgement.relevance == 5 %} green {% endif %} " 
+                            >{{ judgement.label }}</td>
             </tr>
             {% endfor %}
         </tbody>
