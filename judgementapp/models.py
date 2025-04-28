@@ -32,7 +32,7 @@ def default_query_metadata():
 def default_query_questions():
     return {str(i): None for i in range(15)}
 def default_query_question_labels():
-    return {str(i): 0 for i in range(15)}
+    return {str(i): -1 for i in range(15)}
 def default_query_nuggets():
     return {str(i): '' for i in range(50)}
 
@@ -66,7 +66,7 @@ class Query(models.Model):
 
     def unfinished(self):
         n_total = sum([1 for v in self.question_labels.values()])
-        n_judged = sum([int(v) for v in self.question_labels.values()])
+        n_judged = sum([int(v) for v in self.question_labels.values() if v != -1])
 
         if n_judged == 0:
             return 0 
@@ -74,10 +74,6 @@ class Query(models.Model):
             return 1
         else:
             return 2
-
-    def finished(self):
-        n_unjudged = sum([int(v) for v in self.question_labels.values() if v == 0 ])
-        return n_unjudged == 0
 
     def unclassified(self):
         return sum([int(v) for v in self.type.values()]) == 0

@@ -79,10 +79,10 @@
                 <p>({{ i }}) {{ question }}<br/>
                     <input class="form-check-input" type="radio" name="qlabel-{{ i }}" value="-1"
                     {% if query.question_labels|get_item:i == -1%} checked {% endif %}>
-                    <label class="form-check-label" for="defaultCheck1">-1 (Unanswerable) </label>
+                    <label class="form-check-label" for="defaultCheck1">-1 (None) </label>
                     <input class="form-check-input" type="radio" name="qlabel-{{ i }}" value="0"
                     {% if query.question_labels|get_item:i == 0%} checked {% endif %}>
-                    <label class="form-check-label" for="defaultCheck1">0 (None)</label>
+                    <label class="form-check-label" for="defaultCheck1">0 (Unanswerable)</label>
                     <input class="form-check-input" type="radio" name="qlabel-{{ i }}" value="1"
                     {% if query.question_labels|get_item:i == 1%} checked {% endif %}>
                     <label class="form-check-label" for="defaultCheck1">1 (Answerable)</label>
@@ -97,9 +97,11 @@
 
     <div class="card-body row">
 	{% for i, question in query.questions.items %}
+            {% if query.questions|get_item:i %}
             <div class="col-1">
                 <button type="button" class="btn btn-link" onclick="togglePanel('q{{ i }}')">Q-{{ i }}</button>
             </div>
+            {% endif %}
 	{% endfor %}
     </div>
 
