@@ -100,6 +100,7 @@ class Judgement(models.Model):
 
     relevances = models.JSONField(default=default_judgement_relevances)
     rationales = models.JSONField(default=default_judgement_rationales)
+    judged = models.BooleanField(default=False)
 
     def __str__(self):
         data_dict = {
@@ -109,6 +110,9 @@ class Judgement(models.Model):
         }
         to_return = json.dumps(data_dict)
         return to_return + '\n'
+
+    def update_judged(self):
+        self.judged = (min(self.relevances.values()) != -1)
 
     def label(self):
         return "{" + ", ".join(f"Q-{i}: {r}" for i, r in enumerate(self.relevances.values()) if r != -1) + "}"

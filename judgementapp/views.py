@@ -142,6 +142,7 @@ def judge(request, qId, docId):
     for n, rationale in judged:
         judgement.rationales[n] = rationale
 
+    judgement.update_judged()
     judgement.save()
 
     next = None
@@ -190,7 +191,7 @@ def reset(request):
 
 def delete(request):
     # remove results
-    judgements = Judgement.objects.filter(relevance=-1)
+    judgements = Judgement.objects.filter(judged=False)
     n = len(judgements)
     judgements.delete()
 
