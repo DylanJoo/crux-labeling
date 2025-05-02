@@ -64,7 +64,7 @@ class Query(models.Model):
 
     def unfinished(self):
         n_total = sum([1 for v in self.question_labels.values()])
-        n_judged = sum([int(v) for v in self.question_labels.values() if v != -1])
+        n_judged = sum([1 for v in self.question_labels.values() if v != -1])
 
         if n_judged == 0:
             return 0 
@@ -111,8 +111,7 @@ class Judgement(models.Model):
         return to_return + '\n'
 
     def label(self):
-        print(self.relevances.values())
-        return " | ".join(self.labels[r] for r in self.relevances.values() if r != -1)
+        return "{" + ", ".join(f"Q-{i}: {r}" for i, r in enumerate(self.relevances.values()) if r != -1) + "}"
 
 # old document-level judgement
 # class Judgement(models.Model):
