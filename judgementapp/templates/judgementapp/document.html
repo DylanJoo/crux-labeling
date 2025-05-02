@@ -50,18 +50,20 @@
 <div class="card">
 
 <div class="card-body">
-    <h5 class="card-title">Task 2 - Bubric-based Passage Judgement</h5>
-    <p class="card-text">
-        <h6 class="card-title">Detail guildlines</h6>
-        For this task, annotators should access the relevance of reference (i.e., the document in IR). 
-        Follow common IR setting, we adopt the graded labels from 0 to 2.<br/>
+    {# <h5 class="card-title">Rubric-based Passage Judgement</h5> #}
+    <h5>Rubric-based Passage Judgement</h5>
+    </br>
+    <div class="task-section">
+        <p>This task evaluates how well a given <strong>evidence passage addresses a specific answerable question</strong> from Task 1.</p>
+        <p>You will read one passage-question pair at a time, then judge that passage using a 0–5 scale according to rubrics.</p>
         <ul>
-            <li>Not relevant: the passage is irrelevant to your judgment of highlights</li>
-            <li>Somewhat relevant: the passage is relevant to your judgment of highlights.</li>
-            <li>Highly relevant: the information in the passage can be crucial to your judgment of highlights.</li>
+            <li>Carefully read the entire passage before starting the questions.</li>
+            <li>Click the corresponding button of to review the question and the rubric.</li>
+            <li>Decide <strong>how well the passage is based on the rubric</strong> on the scale 0 to 5.</li>
+            <li>Similar to Task1, use the provided <strong>Highlighter</strong> tool to select span(s) as rationale for the rating.</li>
         </ul>
-        Here are <a href="{{ request.path }}examples">some examples</a> for highlighting tasks.
-    </p>
+    </div>
+    {# </h5>Here are <a href="{{ request.path }}/examples">some examples</a> for highlighting tasks.</h5> #}
 </div>
 
 <div class="card text-left m-2">
@@ -101,9 +103,11 @@
     </div>
     <div class="row card-body">
         {% for i, question in query.questions.items %}
-            <div class="col-1">
-                <button type="button" class="btn btn-link" onclick="togglePanel('q{{ i }}')">Q-{{ i }}</button>
-            </div>
+            {% if query.question_labels|get_item:i == 1 %} 
+                <div class="col-1">
+                    <button type="button" class="btn btn-link" onclick="togglePanel('q{{ i }}')">Q-{{ i }}</button>
+                </div>
+            {% endif %}
         {% endfor %}
     </div>
 </div>
@@ -131,7 +135,7 @@
             </div>
 
             <div class="row card-body">
-                <div class="col">
+                <div class="col-7">
                     <h6>Judge the anwerability of the context</h6>
                     <p>Determine whether the question can be answered based on the provided context?
                     Rate the context with on a scale from 0 to 5 according to the guideline below.</p>
@@ -156,7 +160,7 @@
                 <div class="col">
                     <div class="control-group">
                         <h6>The Rationale of nugget</h6>
-                        <p>Why you judge the passage can answer the question? Type or
+                        <p>Why you judge the passage with the rating? 
                         <button type="button" class="btn btn-warning btn-sm" id="capture" onclick="captureSelection({{ i }})">highlight</button>
                          <div class="control-group">
                             <div class="controls">

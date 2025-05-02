@@ -19,5 +19,6 @@ urlpatterns = [
 	re_path(r'^upload/delete$', views.delete, name='delete'),        
 	re_path(r'^upload/reset$', views.reset, name='reset'),        
     re_path(r'^query/(?P<qId>[A-Za-z0-9_\-\+\.]+)/examples/$', views.examples, name='examples'),
-    re_path(r'^query/(?P<qId>[A-Za-z0-9_\-\+\.]+)/doc/(?P<docId>[A-Za-z0-9_\-\+\.]+)/examples/$', views.examples, name='examples'),
+    re_path(r'^query/(?P<qId>[A-Za-z0-9_\-+\.]+)/doc/(?P<docId>[A-Za-z0-9_\-:+#\.]+)/examples/$', views.examples, name='examples'),    
+    # re_path(r'^query/(?P<qId>[A-Za-z0-9_\-\+\.]+)/doc/(?P<docId>[^/]+)/examples/$', views.examples, name='examples'),
 ]

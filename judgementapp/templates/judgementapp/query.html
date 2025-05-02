@@ -8,22 +8,47 @@
     display: none;
     padding: 10px;
 }
+blockquote {
+  background-color: #f9f9f9;
+  border-left: 5px solid #ccc;
+  margin: 20px 0;
+  padding: 10px 15px;
+  font-style: italic;
+}
 </style>
 
 <div class="card">
 
 <div class="card-body">
-    <h5 class="card-title">Task 1 - Report's Coverage Judgemnet</h5>
-    <p class="card-text">
-        <h6 class="card-title">Detail guildlines</h6>
-        For task 1a, annotators should highlight one or multiple <b>consecutive spans</b> that can be treated as a complete semantic unit.<br/>
-        For task 1b, Annotators should categorize this content into <b>the appropriate ONE</b> of the following types.
+    <h5 class="card-title">Report's Coverage Judgemnet</h5>
+    </br>
+    <div class="task-section">
+        <h5>Task 1a – Answerability Judgement</h5>
+        <p>Your first step is to evaluate whether each of the 15 questions (Q-0 to Q-14) is <strong>answerable based solely on the machine-generated report</strong>.</p>
         <ul>
-            <li><span class="text-secondary">Type 0: Trivial information.</span></li>
-            <li><span class="text-primary">Type 1: Company-specific knowledge.</span></li>
+          <li>Carefully read the entire report before starting the questions (the open-ended query is just for you reference).</li>
+          <li>Click the corresponding button (e.g. Q-0, Q-1, etc.) to view the question.</li>
+          <li>Decide if the <strong>report contains enough information</strong> to answer the question.</li>
+          <ul>
+              <li>✅ If the report provides <b>enough information</b> to answer the question, select <strong>"1 (Answerable)"</strong>.</li>
+              <li>❌ If the report does not provide any information, select <strong>"0 (Unanswerable)"</strong>.</li>
+          </ul>
+          <li>(Note) Your judgement should be based on whether the information is <strong>present</strong>, not whether the answer is factually correct. 
+              You do <strong>not</strong> need to verify external truth.</li>
         </ul>
-        Here are <a href="{{ request.path }}examples">some examples</a>.
-    </p>
+    </div>
+    </br>
+
+    <div class="task-section">
+        <h5>Task 2a – Nugget Judgement (Highlighting Support)</h5>
+        <p>For every question you marked as <strong>Answerable (1)</strong>, you must also highlight the <strong>supporting span(s) </strong> of text in the report.</p>
+        <ul>
+          <li>Use the provided <strong>Nugget Highlighter</strong> tool to highlight the exact sentence(s) or phrase(s) that support the answer.</li>
+          <li>You may include multiple spans if needed.</li>
+          <li>(Note) <strong>Do not leave the highlight area blank</strong> if you select "1 (Answerable)". Each "1" must be justified with at least one highlighted span.</li>
+        </ul>
+    </div>
+    {# <p>Here are <a href="{{ request.path }}examples">some examples</a> for highlighting tasks.</p> #}
 </div>
 
 <div class="card text-left m-2">
@@ -31,7 +56,6 @@
     <form class="form-inline" action="" method="post"> {% csrf_token %}
     <div class="card-body row">
         <h6>ID: <i>{{query.qId}}</i> </h6>
-        {# <h6>Number of oracle passages: {{ query.metadata.num_oracle_passages }} </h6> #}
     </div>
     <div class="card-body row">
         <h6>Open-ended Query</h6>

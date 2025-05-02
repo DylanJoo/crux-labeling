@@ -11,7 +11,7 @@ from judgementapp.models import *
 import json
 
 def examples(request, qId=None, docId=None):
-    context = {'back_path': request.path.replace('/examples/', '')}
+    context = {'back_path': request.path.replace('examples/', '')}
     context.update({'is_doc': 'doc' in request.path})
     return render(request, 'judgementapp/examples.html', context)
 
