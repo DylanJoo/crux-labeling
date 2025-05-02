@@ -116,11 +116,13 @@
     <form class="form-inline" action="{% url 'judge' qId=query.qId docId=document.docId %}" method="post">
 
     {% if query.unfinished == 0 %} 
-        <h6>NO judged nuggets found</h6>
+        <div class="row card-body">
+            <h6>NO answerable nuggets found. Task-1a should be finished.</h6>
+        </div>
     {% else %}
 
     {% for i, question in query.questions.items %}
-    {% if query.nuggets|get_item:i %}
+    {% if query.question_labels|get_item:i %}
 
         <div id="q{{ i }}" class="panel">
             <div class="row card-body">
@@ -160,7 +162,7 @@
                 <div class="col">
                     <div class="control-group">
                         <h6>The Rationale of nugget</h6>
-                        <p>Why you judge the passage with the rating? 
+                        <p>Why did you judge the passage with the rating? 
                         <button type="button" class="btn btn-warning btn-sm" id="capture" onclick="captureSelection({{ i }})">highlight</button>
                          <div class="control-group">
                             <div class="controls">
