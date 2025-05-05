@@ -60,11 +60,13 @@ def query(request, qId):
 
     else:
         if "csrfmiddlewaretoken" in request.POST:
-            # question-based nuggets
             for n, question in query.questions.items():
                 query.nuggets[n] = request.POST.getlist(f'nugget-{n}')[0]
             for n, label in query.question_labels.items():
-                query.question_labels[n] = int(request.POST.getlist(f'qlabel-{n}')[0])
+                try:
+                    query.question_labels[n] = int(request.POST.getlist(f'qlabel-{n}')[0])
+                except:
+                    query.question_labels[n] = -2
 
     query.save()
     query.length = len(query.text)
@@ -223,6 +225,8 @@ def upload(request):
                 query.metadata = metadata
                 for i, question in enumerate(questions):
                     query.questions[i] = question
+                    if question is None:
+                        query.question_labels[i] = -2
                 query.reference = reference
                 query.report = report
                 query.save()

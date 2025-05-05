@@ -53,18 +53,21 @@ class Query(models.Model):
 
     def __str__(self):
         answerabiliy = [self.question_labels[k] for k in self.questions]
+        questions = [v if v is not None else "NA" for k, v in self.questions.items()]
+        nuggets = [v for k, v in self.nuggets.items()]
+
         data_dict = {
                 "id": self.qId,
-                "question_based_nugget": {self.questions[k]: self.nuggets[k] for k in self.questions},
-                "answerabiliy": answerabiliy,
+                "question_based_nugget": {q: n for (q, n) in zip(questions, nuggets)},
+                "answerability": answerabiliy,
                 "coverage": sum(a==1 for a in answerabiliy) / len(answerabiliy),
         }
         to_return = json.dumps(data_dict)
         return to_return + '\n'
 
     def unfinished(self):
-        n_total = sum([1 for v in self.question_labels.values()])
-        n_judged = sum([1 for v in self.question_labels.values() if v != -1])
+        n_total = sum([1 for v in self.question_labels.values() if v != -2])
+        n_judged = sum([1 for v in self.question_labels.values() if v >= 0])
 
         if n_judged == 0:
             return 0 
