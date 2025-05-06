@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Annotation Entry Page</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    input, select, button { margin: 10px 0; display: block; }
+    #linkBox { display: none; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h2>Enter Annotation Session</h2>
+
+  <label for="annotatorID">Annotator ID:</label>
+  <input type="text" id="annotatorID" required>
+
+  <label for="annotatorRole">Select Role:</label>
+  <select id="annotatorRole">
+    <option value="">-- Select --</option>
+    <option value="annotator1">Annotator 1</option>
+    <option value="annotator2">Annotator 2</option>
+  </select>
+
+  <button onclick="submitForm()">Start Annotating</button>
+
+  <div id="linkBox">
+    <p><strong>Welcome!</strong> You may now begin annotating:</p>
+    <a href="annotation_system.html" target="_blank">Go to Annotation System</a>
+  </div>
+
+  <script>
+    const assignedRoles = { annotator1: false, annotator2: false };
+
+    function submitForm() {
+      const id = document.getElementById("annotatorID").value.trim();
+      const role = document.getElementById("annotatorRole").value;
+
+      if (!id || !role) {
+        alert("Please enter your ID and select a role.");
+        return;
+      }
+
+      if (assignedRoles[role]) {
+        alert(role + " is already assigned. Please choose another role.");
+        return;
+      }
+
+      assignedRoles[role] = true;
+      document.getElementById("annotatorID").disabled = true;
+      document.getElementById("annotatorRole").disabled = true;
+      document.querySelector("button").disabled = true;
+      document.getElementById("linkBox").style.display = "block";
+    }
+  </script>
+</body>
+</html>
+
