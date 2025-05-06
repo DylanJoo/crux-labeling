@@ -29,7 +29,7 @@ DATABASES = {
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 # ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']
 DEPLOY = "https://crux-labeling-oracle-2.onrender.com"
-ALLOWED_HOSTS = [DEPLOY.replace("https://"), 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = [DEPLOY.replace("https://", ""), 'localhost', '127.0.0.1']
 
 CSRF_TRUSTED_ORIGINS = [DEPLOY]
 
