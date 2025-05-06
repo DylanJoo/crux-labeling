@@ -35,12 +35,12 @@ blockquote {
           </ul>
           <li>(Note) Your judgement should be based on whether the information is <strong>present</strong>, not whether the answer is factually correct. 
               You do <strong>not</strong> need to verify external truth.</li>
-        </ul>
+          </ul>
     </div>
     </br>
 
     <div class="task-section">
-        <h5>Task 2a – Nugget Judgement (Highlighting Support)</h5>
+        <h5>Task 1b – Nugget Judgement (Highlighting Support)</h5>
         <p>For every question you marked as <strong>Answerable (1)</strong>, you must also highlight the <strong>supporting span(s) </strong> of text in the report.</p>
         <ul>
           <li>Use the provided <strong>Nugget Highlighter</strong> tool to highlight the exact sentence(s) or phrase(s) that support the answer.</li>
@@ -156,32 +156,37 @@ blockquote {
 
 </div>
 
-<div class="table-responsive m-2">
-    <table class="table table-striped">
-        <thead style="table-layout:fixed">
-            <tr><th style="width: 10%">No.</th>
-                <th style="width: 30%">Document ID</th>
-                <th style="width: 60%">Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for judgement in judgements %}
-            <tr><td>{{ forloop.counter }}</td>
-                <td><a href="{% url 'document' qId=query.qId docId=judgement.document.docId %}">{{ judgement.document.docId }}</a></td>
-                <td style="color: 
-                            {% if judgement.relevance == -1 %} black {% endif %}
-                            {% if judgement.relevance == 0 %} red {% endif %}
-                            {% if judgement.relevance == 1 %} orange {% endif %}
-                            {% if judgement.relevance == 2 %} orange {% endif %} 
-                            {% if judgement.relevance == 3 %} green {% endif %} 
-                            {% if judgement.relevance == 4 %} green {% endif %} 
-                            {% if judgement.relevance == 5 %} green {% endif %} " 
-                            >{{ judgement.label }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+<div class="card-body">
+    <div class="table-responsive m-2">
+        <div class="task-section">
+            <h5>Task 2 – Relevance Judgement (click the links below to view the documents if any.)</h5>
+        </div>
+        <table class="table table-striped">
+            <thead style="table-layout:fixed">
+                <tr><th style="width: 10%">No.</th>
+                    <th style="width: 30%">Document ID</th>
+                    <th style="width: 60%">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for judgement in judgements %}
+                <tr><td>{{ forloop.counter }}</td>
+                    <td><a href="{% url 'document' qId=query.qId docId=judgement.document.docId %}">{{ judgement.document.docId }}</a></td>
+                    <td style="color: 
+                                {% if judgement.relevance == -1 %} black {% endif %}
+                                {% if judgement.relevance == 0 %} red {% endif %}
+                                {% if judgement.relevance == 1 %} orange {% endif %}
+                                {% if judgement.relevance == 2 %} orange {% endif %} 
+                                {% if judgement.relevance == 3 %} green {% endif %} 
+                                {% if judgement.relevance == 4 %} green {% endif %} 
+                                {% if judgement.relevance == 5 %} green {% endif %} " 
+                                >{{ judgement.label }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    </div>
 </div>
 {% endblock %}
 

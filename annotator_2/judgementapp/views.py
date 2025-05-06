@@ -25,7 +25,8 @@ def index(request):
     return render(request, 'judgementapp/index.html', context)
 
 def qrels(request):
-    judgements = Judgement.objects.exclude(relevance=-1)
+    # judgements = Judgement.objects.exclude(relevance=-1)
+    judgements = Judgement.objects.exclude(judged=False)
 
     response = HttpResponse(judgements, content_type='application/force-download')
     # response['Content-Disposition'] = 'attachment; filename=qrels.txt'
@@ -264,7 +265,7 @@ def upload(request):
                 judgement = Judgement()
                 judgement.query = query
                 judgement.document = document
-                judgement.relevance = -1
+                # judgement.relevance = -1
                 judgement.save()
                 judCount += 1
                 

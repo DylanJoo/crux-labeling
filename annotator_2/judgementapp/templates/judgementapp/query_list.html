@@ -6,11 +6,11 @@
     <div class="card-body">
         <h5 class="card-title">Queries</h5>
         <p class="card-text">
-        This is the overview panel for uploaded queries for annotations. <br/>
-        Please click on the query <strong>text</strong> to see the annotation tasks: Task1 and Task2 (if applicable).<br/>
+        This is the overview panel for uploaded queries for annotations. <hr/>
 
-        The <strong>ID</strong> field appears in <span style="color: red;">red</span> if the task is <strong>unfinished</strong>, and in <span style="color: green;">green</span> if the task is <strong>complete</strong>.<br/>
-        The field <span style="color: red">#Unjudeged is red</span> means some the <i>relevance judgement</i> is not completely finished.
+        Please click on the query <strong>text</strong> to enter the annotation interface: Task-1a, Task-1b and Task2 (if applicable).<br/>
+        The <strong>ID</strong> field appears in <span style="color: red;">red</span> if the task 1 is <strong>unfinished</strong>, and in <span style="color: green;">green</span> if the task is <strong>complete</strong>.<br/>
+        The field #Unjudeged appears in <span style="color: red">red</span> if some <i>passage evidence judgement (Task2)</i> is not completely finished.
         </p>
         {% if queries %}
         <a href="{% url 'qlabels' %}" class="btn btn-outline-dark">Download Report Judgement (qlabels) &raquo;</a>

@@ -54,8 +54,10 @@
     <h5>Rubric-based Passage Judgement</h5>
     </br>
     <div class="task-section">
-        <p>This task evaluates how well a given <strong>evidence passage addresses a specific answerable question</strong> from Task 1.</p>
-        <p>You will read one passage-question pair at a time, then judge that passage using a 0–5 scale according to rubrics.</p>
+        <h5>Task 2 – Rubric-based annotation</h5>
+            <p>This task is followed by previous task you have done (please finish task 1 first).</p>
+            <p>This task evaluates how well a <strong> random given evidence passage addresses a specific (answerable) question</strong> from Task 1.</p>
+            <p>You will read one passage-question pair at a time, then judge that passage using a 0–5 scale according to rubrics.</p>
         <ul>
             <li>Carefully read the entire passage before starting the questions.</li>
             <li>Click the corresponding button of to review the question and the rubric.</li>
@@ -117,7 +119,7 @@
 
     {% if query.unfinished == 0 %} 
         <div class="row card-body">
-            <h6>NO answerable nuggets found. Task-1a should be finished.</h6>
+            <h6>NO answerable nuggets found. Please finish Task 1 first.</h6>
         </div>
     {% else %}
 

@@ -105,17 +105,19 @@ class Judgement(models.Model):
     rationales = models.JSONField(default=default_judgement_rationales)
     judged = models.BooleanField(default=False)
 
+
     def __str__(self):
         data_dict = {
                 "id": self.query.qId,
                 "document": self.document.docId,
                 "relevances": self.relevances,
+                "rationales": self.rationales,
         }
         to_return = json.dumps(data_dict)
         return to_return + '\n'
 
     def update_judged(self):
-        self.judged = (min(self.relevances.values()) != -1)
+        self.judged = (max(self.relevances.values()) != -1)
 
     def label(self):
         return "{" + ", ".join(f"Q-{i}: {r}" for i, r in enumerate(self.relevances.values()) if r != -1) + "}"
@@ -132,4 +134,4 @@ class Judgement(models.Model):
 #         return '%s Q0 %s %s\n' % (self.query.qId, self.document.docId, self.relevance)
 #
 #     def label(self):
-#         return self.labels[self.relevance]
+#         return self.labels[self.relevance<strong>e]
