@@ -36,6 +36,8 @@
   <div id="linkBox">
     <p id="welcomeMessage"><strong>Welcome!</strong></p>
     <a href="annotation_system.html" target="_blank">Go to Annotation System</a>
+    <!-- https://crux-labeling-oracle-2.onrender.com -->
+    <!-- https://crux-labeling-annotator-2.onrender.com -->
   </div>
 
   <script>
@@ -90,7 +92,7 @@
         return;
       }
 
-      // Mark the role as taken in localStorage
+      // Mark the role as taken
       localStorage.setItem(role + '_taken', 'true');
 
       document.getElementById("annotatorID").disabled = true;
@@ -100,8 +102,14 @@
       // Update welcome message with ID and role
       const message = `Welcome, ${id}! You are now assigned as ${role}.`;
       document.getElementById("welcomeMessage").textContent = message;
-
       document.getElementById("linkBox").style.display = "block";
+
+      // Redirect based on role
+      if (role === "annotator1") {
+        window.location.href = "https://example.com/annotator1"; // 🔁 Replace with real URL
+      } else if (role === "annotator2") {
+        window.location.href = "https://example.com/annotator2"; // 🔁 Replace with real URL
+      }
     }
   </script>
 </body>

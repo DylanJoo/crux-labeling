@@ -28,9 +28,10 @@ DATABASES = {
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 # ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']
-ALLOWED_HOSTS = ['crux-labeling.onrender.com', 'localhost', '127.0.0.1']
+DEPLOY = "https://crux-labeling-oracle-2.onrender.com"
+ALLOWED_HOSTS = [DEPLOY.replace("https://"), 'localhost', '127.0.0.1']
 
-CSRF_TRUSTED_ORIGINS = ['https://crux-labeling.onrender.com']
+CSRF_TRUSTED_ORIGINS = [DEPLOY]
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
