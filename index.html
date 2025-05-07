@@ -1,118 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Annotation Entry Page</title>
+  <meta charset="UTF-8">
+  <title>Annotator Recruitment</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    input, select, button { margin: 10px 0; display: block; }
-    #linkBox { display: none; margin-top: 20px; }
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      background-color: #f9f9f9;
+      padding: 40px;
+      max-width: 700px;
+      margin: auto;
+    }
+    h1 {
+      color: #333;
+    }
+    a {
+      color: #1a0dab;
+    }
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
   </style>
 </head>
 <body>
-
-  <a href="#" onclick="showPasswordInput()" style="font-size: 12px; color: gray;">Admin Access</a>
-  <div id="adminSection" style="display: none; margin-top: 10px;">
-    <input type="password" id="adminPass" placeholder="Enter admin password" style="margin-bottom: 5px;">
-    <button onclick="checkPassword()">Submit</button>
-    <div id="resetBox" style="display: none;">
-      <button onclick="resetRoles()" class="small-button">Reset Roles</button>
-    </div>
+  <div class="container">
+    <h1>Annotation Notice</h1>
+    <p>We are recruiting two annotators for the report-based judgement tasks.</p>
+    <p>As this task is going to take a while (4-5 hr) to finish, please take a look at the demo page first before deciding to start the study.</p>
+    <p><strong>Demo page:</strong> <a href="https://crux-labeling-demo.onrender.com/query" target="_blank">https://crux-labeling-demo.onrender.com/query</a></p>
+    <p>If you are willing to do the study, please message me to get the unique link to do the survey.</p>
+    <p>Thanks!</p>
+    <p><strong>Dylan</strong></p>
   </div>
-
-  <h2>Enter Annotation Session</h2>
-
-  <label for="annotatorID">Annotator PROLIFIC ID:</label>
-  <input type="text" id="annotatorID" required>
-
-  <label for="annotatorRole">Select Role:</label>
-  <select id="annotatorRole">
-    <option value="">-- Select --</option>
-    <option value="annotator1">Annotator 1</option>
-    <option value="annotator2">Annotator 2</option>
-  </select>
-
-  <button onclick="submitForm()">Start Annotating</button>
-
-  <div id="linkBox" style="display:none;"></div>
-    <p id="welcomeMessage">
-    <strong>Welcome!</strong>
-    Please copy this link before annotating, as it will only be shown once in case you close the browser or tab.
-    </p>
-  </div>
-
-  <script>
-    function showPasswordInput() {
-      document.getElementById("adminSection").style.display = "block";
-    }
-    
-    function checkPassword() {
-      const password = document.getElementById("adminPass").value;
-      const correct = "dylan0327"; // 🔒 CHANGE THIS to your secret password
-    
-      if (password === correct) {
-        document.getElementById("resetBox").style.display = "block";
-        alert("Access granted. You can now reset roles.");
-      } else {
-        alert("Incorrect password.");
-      }
-    }
-    
-    function resetRoles() {
-      localStorage.removeItem('annotator1_taken');
-      localStorage.removeItem('annotator2_taken');
-      alert("Roles have been reset. Please refresh the page.");
-    }
-
-    function resetRoles() {
-        localStorage.removeItem('annotator1_taken');
-        localStorage.removeItem('annotator2_taken');
-        alert("Roles have been reset. Please refresh the page.");
-    }
-    // Disable already taken roles on load
-    window.onload = function () {
-      if (localStorage.getItem('annotator1_taken') === 'true') {
-        document.querySelector('option[value="annotator1"]').disabled = true;
-      }
-      if (localStorage.getItem('annotator2_taken') === 'true') {
-        document.querySelector('option[value="annotator2"]').disabled = true;
-      }
-    };
-
-    function submitForm() {
-      const id = document.getElementById("annotatorID").value.trim();
-      const role = document.getElementById("annotatorRole").value;
-
-      if (!id || !role) {
-        alert("Please enter your ID and select a role.");
-        return;
-      }
-
-      if (localStorage.getItem(role + '_taken') === 'true') {
-        alert(role + " is already taken on this browser.");
-        return;
-      }
-
-      // Mark the role as taken
-      localStorage.setItem(role + '_taken', 'true');
-
-      document.getElementById("annotatorID").disabled = true;
-      document.getElementById("annotatorRole").disabled = true;
-      document.querySelector("button").disabled = true;
-
-      // Update welcome message with ID and role
-      const message = `Welcome, ${id}! You are now assigned as ${role}.`;
-      document.getElementById("welcomeMessage").textContent = message;
-      document.getElementById("linkBox").style.display = "block";
-
-      // Redirect based on role
-      if (role === "annotator1") {
-        url = "https://crux-labeling-oracle-2.onrender.com/query"; // 🔁 Replace with real URL
-      } else if (role === "annotator2") {
-        url = "https://crux-labeling-annotator-2.onrender.com/query"; // 🔁 Replace with real URL
-      }
-        document.getElementById("linkBox").innerHTML = `<a href="${url}" target="_blank">${url}</a>`;
-    }
-  </script>
 </body>
 </html>
 
