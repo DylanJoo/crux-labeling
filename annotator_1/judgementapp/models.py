@@ -1,3 +1,4 @@
+import random
 import json
 from django.conf import settings
 from django.db import models
@@ -105,6 +106,12 @@ class Judgement(models.Model):
     rationales = models.JSONField(default=default_judgement_rationales)
     judged = models.BooleanField(default=False)
 
+    def get_random_questions(self):
+        random.seed(self.document.docId)
+        answerable = [i for i, l in self.query.question_labels.items() if l == 1] 
+        answerable = answerable + random.sample(range(len(self.query.question_labels)), 1)
+        unanswerable = [i for i, l in self.query.question_labels.items() if (l != -1) and (l != 1)]
+        return random.choices(answerable, k=1) + random.choices(unanswerable, k=1)
 
     def __str__(self):
         data_dict = {

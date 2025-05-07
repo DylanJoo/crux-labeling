@@ -26,11 +26,6 @@
        panel.style.display = (panel.id === id) ? 'block' : 'none';
      });
    }
-   function togglePanel(id) {
-     document.querySelectorAll('.panel').forEach(panel => {
-       panel.style.display = (panel.id === id) ? 'block' : 'none';
-     });
-   }
   function getSelectedText() {
       if (window.getSelection) {
           return window.getSelection().toString();
@@ -56,7 +51,7 @@
     <div class="task-section">
         <h5>Task 2 – Rubric-based annotation</h5>
             <p>This task is followed by previous task you have done (please finish task 1 first).</p>
-            <p>This task evaluates how well a <strong> random given evidence passage addresses a specific (answerable) question</strong> from Task 1.</p>
+            <p>This task is going to judge how well the <strong>relevant evidence passage</strong> can answer <strong> random questions</strong> from Task 1.</p>
             <p>You will read one passage-question pair at a time, then judge that passage using a 0–5 scale according to rubrics.</p>
         <ul>
             <li>Carefully read the entire passage before starting the questions.</li>
@@ -79,6 +74,7 @@
 </div>
 
 
+<form class="form-inline" action="{% url 'judge' qId=query.qId docId=document.docId %}" method="post">
 <div class="card text-left m-2">
     <div class="card-body row">
         <h6>Passage ID: <i>{{ document.docId }}</i> ({{ rank }} / {{total_rank}}) </h6>
@@ -103,35 +99,25 @@
             {% endif %}
         </div>
     </div>
-    <div class="row card-body">
-        {% for i, question in query.questions.items %}
-            {% if query.question_labels|get_item:i == 1 %} 
-                <div class="col-1">
-                    <button type="button" class="btn btn-link" onclick="togglePanel('q{{ i }}')">Q-{{ i }}</button>
-                </div>
-            {% endif %}
-        {% endfor %}
-    </div>
-</div>
-
-<div class="card text-left m-2">
-    <form class="form-inline" action="{% url 'judge' qId=query.qId docId=document.docId %}" method="post">
 
     {% if query.unfinished == 0 %} 
         <div class="row card-body">
-            <h6>NO answerable nuggets found. Please finish Task 1 first.</h6>
+            <div class="row card-body">
+                <h6>To proceed task 2. Please finish Task 1 first.</h6>
+            </div>
         </div>
+
     {% else %}
+        <div class="row card-body">
+        {% for i in judgement.get_random_questions %}
+            <div class="col-1"><button type="button" class="btn btn-link" onclick="togglePanel('q{{ i }}')">Q-{{ i }}</button></div>
+        {% endfor %}
+        </div>
 
-    {% for i, question in query.questions.items %}
-    {% if query.question_labels|get_item:i %}
-
+        {% for i in judgement.get_random_questions %}
         <div id="q{{ i }}" class="panel">
             <div class="row card-body">
-                <div class="col">
-                    <h6>Question</h6>
-                    <p>{{ query.questions|get_item:i }}</p>
-                </div>
+                <div class="col"><h6>Question</h6><p>{{ query.questions|get_item:i }}</p></div>
                 <div class="col">
                     <h6>Nugget <a href="{% url 'query' qId=query.qId %}" class="btn btn-link btm-sm">(edit nugget)</a></h6>
                     <p>{{ query.nuggets|get_item:i }}</p>
@@ -145,12 +131,10 @@
                     Rate the context with on a scale from 0 to 5 according to the guideline below.</p>
                     {% csrf_token %}
                     <div class="form-check" id="relevance-labels">
-                        <input type="radio" name="relevance" id="relevance-1" value="-1" {% if judgement.relevances|get_item:i == -1 %} checked {% endif %}>
-                        <label class="radio"> Unjudged </label></br>
                         <input type="radio" name="relevance-{{ i }}" id="relevance-5" value="5" {% if judgement.relevances|get_item:i == 5 %} checked {% endif %}>
                         <label class="radio"> (5) highly relevant, complete, and accurate.</label></br>
                         <input type="radio" name="relevance-{{ i }}" id="relevance-4" value="4" {% if judgement.relevances|get_item:i == 4 %} checked {% endif %}>
-                        <label class="radio"> (4)  mostly relevant and complete but may have minor gaps or inaccuracies.</label></br>
+                        <label class="radio"> (4) mostly relevant and complete but may have minor gaps or inaccuracies.</label></br>
                         <input type="radio" name="relevance-{{ i }}" id="relevance-3" value="3" {% if judgement.relevances|get_item:i == 3 %} checked {% endif %}>
                         <label class="radio"> (3) partially relevant and complete, with noticeable gaps or inaccuracies.</label></br>
                         <input type="radio" name="relevance-{{ i }}" id="relevance-2" value="2" {% if judgement.relevances|get_item:i == 2 %} checked {% endif %}>
@@ -161,6 +145,7 @@
                         <label class="radio"> (0) minimally relevant or complete, with substantial shortcomings.</label></br>
                     </div>
                 </div>
+
                 <div class="col">
                     <div class="control-group">
                         <h6>The Rationale of nugget</h6>
@@ -170,15 +155,16 @@
                             <div class="controls">
                                 <textarea style="width:100%" id="rationale-{{ i }}" name="rationale-{{ i }}">{{ judgement.rationales|get_item:i }}</textarea>
                             </div>
-                          </div>
+                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
+        {% endfor %}
     {% endif %}
-    {% endfor %}
-    {% endif %}
+
+    </div>
+
 </div>
 
     <div class="card-body row">
@@ -197,8 +183,8 @@
             </div>
         </div>
     </div>
-    </form>
 </div>
+</form>
 </div>
 
 {% endblock %}
