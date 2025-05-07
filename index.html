@@ -21,7 +21,7 @@
 
   <h2>Enter Annotation Session</h2>
 
-  <label for="annotatorID">Annotator ID:</label>
+  <label for="annotatorID">Annotator PROLIFIC ID:</label>
   <input type="text" id="annotatorID" required>
 
   <label for="annotatorRole">Select Role:</label>
@@ -33,9 +33,11 @@
 
   <button onclick="submitForm()">Start Annotating</button>
 
-  <div id="linkBox">
-    <p id="welcomeMessage"><strong>Welcome!</strong></p>
-    <a href="annotation_system.html" target="_blank">Go to Annotation System</a>
+  <div id="linkBox" style="display:none;"></div>
+    <p id="welcomeMessage">
+    <strong>Welcome!</strong>
+    Please copy this link before annotating, as it will only be shown once in case you close the browser or tab.
+    </p>
   </div>
 
   <script>
@@ -104,10 +106,11 @@
 
       // Redirect based on role
       if (role === "annotator1") {
-        window.location.href = "https://crux-labeling-oracle-2.onrender.com/query"; // 🔁 Replace with real URL
+        url = "https://crux-labeling-oracle-2.onrender.com/query"; // 🔁 Replace with real URL
       } else if (role === "annotator2") {
-        window.location.href = "https://crux-labeling-annotator-2.onrender.com/query"; // 🔁 Replace with real URL
+        url = "https://crux-labeling-annotator-2.onrender.com/query"; // 🔁 Replace with real URL
       }
+        document.getElementById("linkBox").innerHTML = `<a href="${url}" target="_blank">${url}</a>`;
     }
   </script>
 </body>
