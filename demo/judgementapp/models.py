@@ -111,7 +111,8 @@ class Judgement(models.Model):
         answerable = [i for i, l in self.query.question_labels.items() if l == 1] 
         answerable = answerable + random.sample(range(len(self.query.question_labels)), 1)
         unanswerable = [i for i, l in self.query.question_labels.items() if (l != -1) and (l != 1)]
-        return random.choices(answerable, k=1) + random.choices(unanswerable, k=1)
+        selected = random.choices(answerable, k=1) + random.choices(unanswerable, k=1)
+        return [str(i) for i in selected]
 
     def __str__(self):
         data_dict = {
