@@ -3,8 +3,13 @@ import json
 
 # qlabels
 
-a, b, c = [], [], []
 bm25, rankfirst = [], []
+
+# coverage
+a, b, c = [], [], []
+
+# answerability
+answerability = {'bm25': [], 'rankfirst': [], 'oracle': []}
 with open('qlabels.jsonl', 'r') as f:
     for line in f:
         data = json.loads(line.strip())
@@ -13,17 +18,21 @@ with open('qlabels.jsonl', 'r') as f:
             true = [i for i in all if i == 1]
             a.append( len(true) / len(all) )
             bm25.append(data)
+            answerability['bm25'] += data['answerability']
 
         elif 'rankfirst' in data['id']:
             all = [i for i in data['answerability'] if i != -2]
             true = [i for i in all if i == 1]
             b.append( len(true) / len(all) )
             rankfirst.append(data)
+            answerability['rankfirst'] += data['answerability']
 
         else:
             all = [i for i in data['answerability'] if i != -2]
             true = [i for i in all if i == 1]
             c.append( len(true) / len(all) )
+            answerability['oracle'] += data['answerability']
+
 
 print(len(a), len(b), len(c))
 print('oracle', np.mean(c), np.std(c))
@@ -32,6 +41,8 @@ print('rankfirst', np.mean(b), np.std(b))
 print('oracle', c)
 print('bm25', a)
 print('dr_rankfirst', b)
+
+print('Answerability = ', answerability)
 
 
 # print([i for i, v in enumerate(a) if v > b[i]])
