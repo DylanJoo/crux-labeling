@@ -1,0 +1,76 @@
+[
+    {
+        "id": "duc04-testb-3",
+        "question_based_nugget": {
+            "": "",
+            "": "The arrest and detention of former Malaysian Deputy Prime Minister Anwar Ibrahim in September 1998",
+            "": "charges of illegal homosexual acts and corruption.",
+            "": "",
+            "": "The international community was quick to react, with Indonesian President B.J. Habibie expressing concerns about attending the upcoming Asia-Pacific Economic Cooperation (APEC) forum in Malaysia due to the perceived mistreatment of Anwar.",
+            "": "",
+            "": "",
+            "": "The arrest of Anwar had significant implications for the Malaysian government and economy. Trade Minister Rafidah Aziz stated that the arrest would not lead to significant social unrest or deter investors. However, the incident has tarnished the image of the Malaysian police, with calls for a full investigation into the matter.",
+            "": "The international community was quick to react, with Indonesian President B.J. Habibie expressing concerns about attending the upcoming Asia-Pacific Economic Cooperation (APEC) forum in Malaysia due to the perceived mistreatment of Anwar.",
+            "": "",
+            "": "Anwar began speaking out against Mahathir, leading to his arrest on September 20 on charges of illegal homosexual acts and corruption.",
+            "": "Trade Minister Rafidah Aziz stated that the arrest would not lead to significant social unrest or deter investors.",
+            "": "",
+            "": "Asia-Pacific Economic Cooperation (APEC) forum in Malaysia",
+            "": "Anwar's detention was sparked by his disagreement with Prime Minister Mahathir Mohamad on economic policy, which led to his dismissal on September 2."
+        },
+        "answerability": [
+            0,
+            1,
+            1,
+            0,
+            1,
+            0,
+            0,
+            1,
+            1,
+            0,
+            1,
+            1,
+            0,
+            1,
+            1
+        ],
+        "coverage": 0.6
+    },
+    {
+        "id": "duc04-testb-7",
+        "question_based_nugget": {
+            "": " In addition to the education issue, the negotiations were also delayed by disagreements over specific provisions, such as the creation of \"peanut-free\" zones on airlines.",
+            "": "conservative Republicans expressing concerns over specific issues, such as the requirement for federal health plans to cover contraceptives and the prohibition on overseas family-planning organizations from lobbying to change abortion laws in other countries.",
+            "": " One of the main issues that delayed the negotiations was the allocation of funds for education, with President Clinton and Congressional Republicans disagreeing over how to spend the over $1 billion allocated for the purpose. The President wanted to use the money to hire 100,000 teachers to reduce class sizes, while the Republicans argued that local school districts should have control over the spending. ",
+            "": "Overall, the 1998 federal budget negotiations were a complex and challenging process that was marked by significant delays and disagreements, but ultimately resulted in an agreement that was expected to exceed 3,000 pages.",
+            "": "",
+            "": "conservative Republicans expressing concerns over specific issues, such as the requirement for federal health plans to cover contraceptives and the prohibition on overseas family-planning organizations from lobbying to change abortion laws in other countries.",
+            "": "",
+            "": "conservative Republicans expressing concerns over specific issues, such as the requirement for federal health plans to cover contraceptives and the prohibition on overseas family-planning organizations from lobbying to change abortion laws in other countries.",
+            "": " however, with conservative Republicans expressing concerns over specific issues, such as the requirement for federal health plans to cover contraceptives and the prohibition on overseas family-planning organizations from lobbying to change abortion laws in other countries.",
+            "": "",
+            "": "The agreement included a number of provisions, such as the extension of tax breaks for Individual Retirement Accounts to couples with incomes from $100,000 to $150,000, which would actually raise a small amount of revenue in the next five years but make the picture considerably worse in later years.",
+            "": "",
+            "": "extension of tax breaks for Individual Retirement Accounts to couples with incomes from $100,000 to $150,000,"
+        },
+        "answerability": [
+            1,
+            1,
+            1,
+            1,
+            0,
+            -2,
+            1,
+            0,
+            -2,
+            1,
+            1,
+            0,
+            1,
+            0,
+            1
+        ],
+        "coverage": 0.6
+    }
+]

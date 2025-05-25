@@ -1,0 +1,192 @@
+{% extends "judgementapp/base.html" %}
+
+{% block content %}
+{% load custom_tags %}
+
+<style>
+.panel {
+    display: none;
+    padding: 10px;
+}
+blockquote {
+  background-color: #f9f9f9;
+  border-left: 5px solid #ccc;
+  margin: 20px 0;
+  padding: 10px 15px;
+  font-style: italic;
+}
+</style>
+
+<div class="card">
+
+<div class="card-body">
+    <h5 class="card-title">Report's Coverage Judgemnet</h5>
+    </br>
+    <div class="task-section">
+        <h5>Task 1a – Answerability Judgement</h5>
+        <p>Your first step is to evaluate whether each of the 15 questions (Q-0 to Q-14) is <strong>answerable based solely on the machine-generated report</strong>.</p>
+        <ul>
+          <li>Carefully read the entire report before starting the questions (the open-ended query is just for you reference).</li>
+          <li>Click the corresponding button (e.g. Q-0, Q-1, etc.) to view the question.</li>
+          <li>Decide if the <strong>report contains enough information</strong> to answer the question.</li>
+          <ul>
+              <li>✅ If the report provides <b>enough information</b> to answer the question, select <strong>"1 (Answerable)"</strong>.</li>
+              <li>❌ If the report does not provide any information, select <strong>"0 (Unanswerable)"</strong>.</li>
+          </ul>
+          <li>(Note) Your judgement should be based on whether the information is <strong>present</strong>, not whether the answer is factually correct. 
+              You do <strong>not</strong> need to verify external truth.</li>
+          </ul>
+    </div>
+    </br>
+
+    <div class="task-section">
+        <h5>Task 1b – Nugget Judgement (Highlighting Support)</h5>
+        <p>For every question you marked as <strong>Answerable (1)</strong>, you must also highlight the <strong>supporting span(s) </strong> of text in the report.</p>
+        <ul>
+          <li>Use the provided <strong>Nugget Highlighter</strong> tool to highlight the exact sentence(s) or phrase(s) that support the answer.</li>
+          <li>You may include multiple spans if needed.</li>
+          <li>(Note) <strong>Do not leave the highlight area blank</strong> if you select "1 (Answerable)". Each "1" must be justified with at least one highlighted span.</li>
+        </ul>
+    </div>
+    {# <p>Here are <a href="{{ request.path }}examples">some examples</a> for highlighting tasks.</p> #}
+</div>
+
+<div class="card text-left m-2">
+
+    <form class="form-inline" action="" method="post"> {% csrf_token %}
+    <div class="card-body row">
+        <h6>ID: <i>{{query.qId}}</i> </h6>
+    </div>
+    <div class="card-body row">
+        <h6>Open-ended Query</h6>
+        <p>{{ query.text }} </p>
+
+        <div class="col" align="right">
+        <div class="btn-group btn-group-sm" role="group" aria-label="Basic checkbox toggle button group">
+            <input type="checkbox" class="btn-check" name="topic" id="topic1" value="1"
+            {% if query.topic.1 == 1%} checked {% endif %}>
+            <label class="btn btn-outline-dark btn-sm" for="topic1">Report request</label>
+        </div>
+        </div>
+    </div>
+    <div class="card-body row">
+	<h6>Report</h6>
+	<p>{{ query.report }} </p>
+    </div>
+
+    <script type="text/javascript">
+       function togglePanel(id) {
+	 document.querySelectorAll('.panel').forEach(panel => {
+	   panel.style.display = (panel.id === id) ? 'block' : 'none';
+	 });
+       }
+      function getSelectedText() {
+	  if (window.getSelection) {
+	      return window.getSelection().toString();
+	  } else if (document.selection) {
+	      return document.selection.createRange().text;
+	  }
+	  return '';
+      }
+      function captureSelection(i) {
+	let query = {'nuggets': {{ query.nuggets|safe }}};
+	textarea = document.getElementById('nugget-' + i);
+        query.nuggets[i] = getSelectedText();
+	textarea.value = query.nuggets[i];
+      }
+    </script>
+
+    <div class="card-body row">
+        <h6>Questions</h6>
+            {% for i, question in query.questions.items %}
+            <div id="q{{ i }}" class="panel">
+                <p>({{ i }}) {{ question }}<br/>
+                    <input class="form-check-input" type="radio" name="qlabel-{{ i }}" value="-1"
+                    {% if query.question_labels|get_item:i == -1%} checked {% endif %}>
+                    <label class="form-check-label" for="defaultCheck1">-1 (None) </label>
+                    <input class="form-check-input" type="radio" name="qlabel-{{ i }}" value="0"
+                    {% if query.question_labels|get_item:i == 0%} checked {% endif %}>
+                    <label class="form-check-label" for="defaultCheck1">0 (Unanswerable)</label>
+                    <input class="form-check-input" type="radio" name="qlabel-{{ i }}" value="1"
+                    {% if query.question_labels|get_item:i == 1%} checked {% endif %}>
+                    <label class="form-check-label" for="defaultCheck1">1 (Answerable)</label>
+                </p>
+                <div style="display: flex; align-items: flex-end; gap: 10px;">
+                    <textarea style="width:80%" id="nugget-{{ i }}" name="nugget-{{ i }}" rows="1" cols="10">{{ query.nuggets|get_item:i }}</textarea>
+                    <button type="button" class="btn btn-warning btn-sm" id="capture" onclick="captureSelection({{ i }})">Nugget Highlighter ({{ i }})</button>
+                </div>
+            </div>
+            {% endfor %}
+    </div>
+
+    <div class="card-body row">
+	{% for i, question in query.questions.items %}
+            {% if query.questions|get_item:i %}
+            <div class="col-1">
+                <button type="button" class="btn btn-link" onclick="togglePanel('q{{ i }}')">Q-{{ i }}</button>
+            </div>
+            {% endif %}
+	{% endfor %}
+    </div>
+
+    <div class="card-body row">
+        <div class="col align-self-end" align="right">
+            <div class="form-actions">
+                <button type="submit" class="btn btn-outline-primary btn-sm">Save</button> 
+                <button type="submit" name="clear" value="1" class="btn btn-outline-danger btn-sm">Clear</button> 
+            </div>
+        </div>
+    </div>
+
+
+    <div class="card-body row">
+        <div class="col">
+            {% if prev %}
+            <a href="{% url 'query' qId=prev.qId%}" class="btn btn-outline-dark btn-sm">Prev Query</a>
+            {% endif %}
+        </div>
+        <div class="col" align="right">
+            {% if next %}
+            <a href="{% url 'query' qId=next.qId%}" class="btn btn-outline-dark btn-sm">Next Query</a>
+            {% endif %}
+        </div>
+    </div>
+
+    </form>
+
+</div>
+
+<div class="card-body">
+    <div class="table-responsive m-2">
+        <div class="task-section">
+            <h5>Task 2 – Relevance Judgement (click the links below to view the documents if any.)</h5>
+        </div>
+        <table class="table table-striped">
+            <thead style="table-layout:fixed">
+                <tr><th style="width: 10%">No.</th>
+                    <th style="width: 30%">Document ID</th>
+                    <th style="width: 60%">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for judgement in judgements %}
+                <tr><td>{{ forloop.counter }}</td>
+                    <td><a href="{% url 'document' qId=query.qId docId=judgement.document.docId %}">{{ judgement.document.docId }}</a></td>
+                    <td style="color: 
+                                {% if judgement.relevance == -1 %} black {% endif %}
+                                {% if judgement.relevance == 0 %} red {% endif %}
+                                {% if judgement.relevance == 1 %} orange {% endif %}
+                                {% if judgement.relevance == 2 %} orange {% endif %} 
+                                {% if judgement.relevance == 3 %} green {% endif %} 
+                                {% if judgement.relevance == 4 %} green {% endif %} 
+                                {% if judgement.relevance == 5 %} green {% endif %} " 
+                                >{{ judgement.label }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    </div>
+</div>
+{% endblock %}
+
